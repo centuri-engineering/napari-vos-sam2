@@ -26,14 +26,20 @@ https://napari.org/stable/plugins/index.html
 
 ## Installation
 
-You can install `napari-vos-sam2` via [pip]:
+(Recommend) Create a conda environment:
     
     conda create -n napari-vos-env python=3.11
     conda activate napari-vos-env
+    
+Install PyTorch with GPU 
 
     pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+    
+Install napari
 
     python -m pip install "napari[all]"
+
+Install SAM 2 with a stable version before 30 September 2024 
 
     git clone https://github.com/facebookresearch/sam2.git
     cd sam2
@@ -41,9 +47,10 @@ You can install `napari-vos-sam2` via [pip]:
 
     git checkout <commit_hash>
     pip install -e .
-    pip install git+https://github.com/ledvic/napari-vos-sam2.git
 
-    pip install git+https://github.com/ledvic/AFM-leveling.git#egg=afmprocessing
+Install the plugin
+
+    pip install git+https://github.com/ledvic/napari-vos-sam2.git
 
 
 To update latest development version :
