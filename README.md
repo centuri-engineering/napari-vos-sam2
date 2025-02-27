@@ -9,6 +9,9 @@
 
 # Video Object Segmentation using pre-trained SAM2 model
 
+#IDP32| IBDM |
+Automated tracking and segmentation of cell aggregates aspiration experiments 
+
 ----------------------------------
 
 This [napari] plugin was generated with [copier] using the [napari-plugin-template].
