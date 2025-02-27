@@ -9,11 +9,6 @@
 -->
 # Video Object Segmentation using pre-trained SAM2 model
 
-#IDP32| IBDM |
-Automated tracking and segmentation of cell aggregates aspiration experiments 
-
-----------------------------------
-
 This [napari] plugin was generated with [copier] using the [napari-plugin-template].
 
 <!--
@@ -23,18 +18,38 @@ https://github.com/napari/napari-plugin-template#getting-started
 and review the napari docs for plugin developers:
 https://napari.org/stable/plugins/index.html
 -->
+----------------------------------
+
+## Project Title
+
+    #IDP32| IBDM | Automated tracking and segmentation of cell aggregates aspiration experiments 
 
 ## Installation
 
 You can install `napari-vos-sam2` via [pip]:
+    
+    conda create -n napari-vos-env python=3.11
+    conda activate napari-vos-env
 
-    pip install napari-vos-sam2
+    pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
+    python -m pip install "napari[all]"
 
+    git clone https://github.com/facebookresearch/sam2.git
+    cd sam2
+    git rev-list -n 1 --before="2024-09-30" HEAD
 
-To install latest development version :
-
+    git checkout <commit_hash>
+    pip install -e .
     pip install git+https://github.com/ledvic/napari-vos-sam2.git
+
+    pip install git+https://github.com/ledvic/AFM-leveling.git#egg=afmprocessing
+
+
+To update latest development version :
+
+    conda activate napari-vos-env
+    pip install -U git+https://github.com/ledvic/napari-vos-sam2.git
 
 
 ## Contributing
