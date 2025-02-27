@@ -1,12 +1,12 @@
 # napari-vos-sam2
 
-[//]:[![License MIT](https://img.shields.io/pypi/l/napari-vos-sam2.svg?color=green)](https://github.com/ledvic/napari-vos-sam2/raw/main/LICENSE)
-[//]:[![PyPI](https://img.shields.io/pypi/v/napari-vos-sam2.svg?color=green)](https://pypi.org/project/napari-vos-sam2)
-[//]:[![Python Version](https://img.shields.io/pypi/pyversions/napari-vos-sam2.svg?color=green)](https://python.org)
-[//]:[![tests](https://github.com/ledvic/napari-vos-sam2/workflows/tests/badge.svg)](https://github.com/ledvic/napari-vos-sam2/actions)
-[//]:[![codecov](https://codecov.io/gh/ledvic/napari-vos-sam2/branch/main/graph/badge.svg)](https://codecov.io/gh/ledvic/napari-vos-sam2)
-[//]:[![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/napari-vos-sam2)](https://napari-hub.org/plugins/napari-vos-sam2)
-
+<!---[![License MIT](https://img.shields.io/pypi/l/napari-vos-sam2.svg?color=green)](https://github.com/ledvic/napari-vos-sam2/raw/main/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/napari-vos-sam2.svg?color=green)](https://pypi.org/project/napari-vos-sam2)
+[![Python Version](https://img.shields.io/pypi/pyversions/napari-vos-sam2.svg?color=green)](https://python.org)
+[![tests](https://github.com/ledvic/napari-vos-sam2/workflows/tests/badge.svg)](https://github.com/ledvic/napari-vos-sam2/actions)
+[![codecov](https://codecov.io/gh/ledvic/napari-vos-sam2/branch/main/graph/badge.svg)](https://codecov.io/gh/ledvic/napari-vos-sam2)
+[![napari hub](https://img.shields.io/endpoint?url=https://api.napari-hub.org/shields/napari-vos-sam2)](https://napari-hub.org/plugins/napari-vos-sam2)
+-->
 # Video Object Segmentation using pre-trained SAM2 model
 
 #IDP32| IBDM |
