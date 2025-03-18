@@ -46,7 +46,7 @@ Install SAM 2 with a stable version before 30 September 2024
     git rev-list -n 1 --before="2024-09-30" HEAD
 
     git checkout <commit_hash>
-    pip install -e .
+    pip install -e.
 
 Install the plugin
 
