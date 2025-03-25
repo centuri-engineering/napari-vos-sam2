@@ -61,9 +61,12 @@ To update latest development version :
 
 Export mask as TIF
 
-    Convert the data type of selected label layer int a signed 16-bit integer format by right clicking on it and selecting: *Convert data type > Convert to int16*
-    Save the selected layer as TIFF file from the menu: *File > Save Selected Layers..*
-    This TIFF file can be opened in ImageJ/Fiji
+    - Convert the data type of selected label layer int a signed 16-bit integer format 
+    by right clicking on it and selecting: *Convert data type \> Convert to int16*
+    - Save the selected layer as TIFF file from the menu: *File \> Save Selected Layers..*
+    - This TIFF file can be opened in ImageJ/Fiji
+
+    
 
 
 To run the plugin properly when re-opening it, make sure the current folder is the SAM 2 folder (i.e., **sam2** from above installation)
