@@ -62,8 +62,8 @@ To update latest development version :
 Export mask as TIF
 
     > Convert the data type of selected label layer int a signed 16-bit integer format 
-    by right clicking on it and selecting: _Convert data type > Convert to int16_
-    > Save the selected layer as TIFF file from the menu: _File > Save Selected Layers.._
+    by right clicking on it and selecting: *Convert data type > Convert to int16*
+    > Save the selected layer as TIFF file from the menu: *File > Save Selected Layers..*
     > This TIFF file can be opened in ImageJ/Fiji
 
     
