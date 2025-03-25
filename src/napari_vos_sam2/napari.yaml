@@ -3,55 +3,12 @@ display_name: Video Object Segmentation adapted for videos' organoids
 # use 'hidden' to remove plugin from napari hub search results
 visibility: public
 # see https://napari.org/stable/plugins/technical_references/manifest.html#fields for valid categories
-categories: ["Annotation", "Segmentation", "Acquisition"]
+categories: ["Annotation", "Segmentation"]
 contributions:
   commands:
-    - id: napari-vos-sam2.get_reader
-      python_name: napari_vos_sam2._reader:napari_get_reader
-      title: Open data with Video Object Segmentation adapted for videos' organoids
-    - id: napari-vos-sam2.write_multiple
-      python_name: napari_vos_sam2._writer:write_multiple
-      title: Save multi-layer data with Video Object Segmentation adapted for videos' organoids
-    - id: napari-vos-sam2.write_single_image
-      python_name: napari_vos_sam2._writer:write_single_image
-      title: Save image data with Video Object Segmentation adapted for videos' organoids
-    - id: napari-vos-sam2.make_sample_data
-      python_name: napari_vos_sam2._sample_data:make_sample_data
-      title: Load sample data from Video Object Segmentation adapted for videos' organoids
-    - id: napari-vos-sam2.make_container_widget
-      python_name: napari_vos_sam2:ImageThreshold
-      title: Make threshold Container widget
-    - id: napari-vos-sam2.make_magic_widget
-      python_name: napari_vos_sam2:threshold_magic_widget
-      title: Make threshold magic widget
-    - id: napari-vos-sam2.make_function_widget
-      python_name: napari_vos_sam2:threshold_autogenerate_widget
-      title: Make threshold function widget
     - id: napari-vos-sam2.make_qwidget
-      python_name: napari_vos_sam2:ExampleQWidget
-      title: Make example QWidget
-  readers:
-    - command: napari-vos-sam2.get_reader
-      accepts_directories: false
-      filename_patterns: ['*.npy']
-  writers:
-    - command: napari-vos-sam2.write_multiple
-      layer_types: ['image*','labels*']
-      filename_extensions: []
-    - command: napari-vos-sam2.write_single_image
-      layer_types: ['image']
-      filename_extensions: ['.npy']
-  sample_data:
-    - command: napari-vos-sam2.make_sample_data
-      display_name: Video Object Segmentation adapted for videos' organoids
-      key: unique_id.1
+      python_name: napari_vos_sam2:VOSQWidget
+      title: Video Object Segmentation using SAMv2
   widgets:
-    - command: napari-vos-sam2.make_container_widget
-      display_name: Container Threshold
-    - command: napari-vos-sam2.make_magic_widget
-      display_name: Magic Threshold
-    - command: napari-vos-sam2.make_function_widget
-      autogenerate: true
-      display_name: Autogenerate Threshold
     - command: napari-vos-sam2.make_qwidget
-      display_name: Example QWidget
+      display_name: VOS-SAMv2
