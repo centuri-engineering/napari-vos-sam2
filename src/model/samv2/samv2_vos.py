@@ -16,13 +16,15 @@ class SAM2vos():
     def __init__(self, video_data, video_dir, sam2_model_checkpoint_path, sam2_model_config_name):
         super().__init__()
         self.video_data = video_data
-        print(f"pass 1: {sam2_model_checkpoint_path} and {sam2_model_config_name}")
+        # print(f"pass 1: {sam2_model_checkpoint_path} and {sam2_model_config_name}") # Debug print
 
         self.predictor = build_sam2_video_predictor(sam2_model_config_name, sam2_model_checkpoint_path, device=self.__setup_device_for_computation())
-        print("pass 2")
+        # print("pass 2") # Debug print
 
         self.extract_video_frames(video_data, video_dir)
-        print(f"pass 3: {Path(video_dir).as_posix()}")
+
+        # print(f"pass 3: {Path(video_dir).as_posix()}") # Debug print
+
         self.inference_state = self.predictor.init_state(video_path=Path(video_dir).as_posix())
 
         # dict containing the click position on a frame based on frame index ~ frame_segments[ann_obj_id] = [[ann_frame_idx, points, labels]]
@@ -36,7 +38,7 @@ class SAM2vos():
         else:
             device = torch.device("cpu")
 
-        print(f"using device: {device}") #debug print
+        # print(f"using device: {device}") #debug print
 
         if device.type == "cuda":
             # use bfloat16 
@@ -64,30 +66,28 @@ class SAM2vos():
             frame_jpeg = Image.fromarray(frame)
             frame_jpeg.save(frame_path)
 
-        print("Stored the video as a list of JPEG frames")
+        print("Stored the video as a list of JPEG frames as requirement to using SAM2 model")
 
     def add_click_on_a_frame(self, click_position, main_obj_id, is_positive):
         
         ann_frame_idx  = click_position[0] # the frame index we interact with
 
-        print("::::::::::::::: Current frame index", ann_frame_idx, ":::::::::::::::")
+        # print("::::::::::::::: Current frame index", ann_frame_idx, ":::::::::::::::")  # Debug print
 
         ann_obj_id = main_obj_id  # give a unique id to each object we interact with (it can be any integers)
         
         point = np.array([click_position[2], click_position[1]], np.float32)
         label = np.array([is_positive], np.int32) # for labels, `1` means positive click and `0` means negative click
 
-        # frame_with_click_position = [ann_frame_idx, point, label]
-
         # update the click positions for each object
         # check if this new click is in the dictionary of previous clicks ~ ann_obj_id
         if ann_obj_id in self.frame_segments:
-            print("----- we are in if yes ----")
+            # print("----- we are in if yes ----")  # Debug print
             found = False  # flag to check if an entry with the current frame index exists
             frame_with_click_position_all = []
             for current_click_positions in self.frame_segments[ann_obj_id]:
                 if current_click_positions[0] == ann_frame_idx:
-                    print("----- we are in if yes 111111----")
+                    # print("----- we are in if yes 111111----")  # Debug print
                     current_points = current_click_positions[1]
                     current_labels = current_click_positions[2]
 
@@ -98,7 +98,7 @@ class SAM2vos():
                     frame_with_click_position_all.append(click_position_new)
                     found = True
                 else:
-                    print("----- we are in if yes 2222----")
+                    # print("----- we are in if yes 2222----")  # Debug print
                     frame_with_click_position_all.append(current_click_positions)
             # If no entry was found for the current frame, append a new entry.
             if not found:
@@ -107,14 +107,12 @@ class SAM2vos():
             self.frame_segments[ann_obj_id] = frame_with_click_position_all
 
         else: #
-            print("----- we are in else ----")
+            # print("----- we are in else ----")  # Debug print
             self.frame_segments[ann_obj_id] = [[ann_frame_idx, point, label]]
         # check if this click is in the same frame index ~ click_position[0]
 
         # get all click positions and labels for current object at current frame
-        print(":::: frame_segments of the object with id ", ann_obj_id, "::::", self.frame_segments[ann_obj_id])
-
-
+        # print(":::: frame_segments of the object with id ", ann_obj_id, "::::", self.frame_segments[ann_obj_id])  # Debug print
         current_frame_points = []
         current_frame_labels = []
         for entry in self.frame_segments[ann_obj_id]:
@@ -124,19 +122,10 @@ class SAM2vos():
                 current_frame_labels.append(lbls)
 
         current_frame_points = np.vstack(current_frame_points)
-        # if current_frame_points:
-        #     current_frame_points = np.vstack(current_frame_points)
-        # else:
-        #     current_frame_points = np.empty((0, 2), dtype=np.float32)
-
         current_frame_labels = np.vstack(current_frame_labels)
-        # if current_frame_labels:
-        #     current_frame_labels = np.vstack(current_frame_labels)
-        # else:
-        #     current_frame_labels = np.empty((0,), dtype=np.int32)
 
-        print("::::Points for frame::::", ann_frame_idx, ":::::", current_frame_points)
-        print("::::Labels for frame::::", ann_frame_idx, "::::::", current_frame_labels)
+        # print("::::Points for frame::::", ann_frame_idx, ":::::", current_frame_points)  # Debug print
+        # print("::::Labels for frame::::", ann_frame_idx, "::::::", current_frame_labels)  # Debug print
 
         # do the prediction
         _, out_obj_ids, out_mask_logits = self.predictor.add_new_points_or_box(

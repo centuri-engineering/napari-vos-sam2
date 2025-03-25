@@ -10,7 +10,6 @@ import uuid
 
 # import tqdm
 import requests
-
 from pathlib import Path
 
 from model.samv2.samv2_vos import SAM2vos
@@ -27,6 +26,8 @@ class VOSQWidget(QWidget):
 		super().__init__()
 		self.viewer = viewer
 
+		self.sam2_vos_predictor = None
+
 		# Load GUI
 		gui_file_path = os.path.join(os.path.dirname(__file__), "..", "gui", "mainUI_v1.ui")
 		uic.loadUi(gui_file_path, self)
@@ -36,9 +37,9 @@ class VOSQWidget(QWidget):
 		self.comboBox_output = self.findChild(QComboBox, "comboBox_label_layer")
 		self.comboBox_model = self.findChild(QComboBox, "comboBox_model_layer")
 
-		print(f"Image ComboBox: {self.comboBox_input}")  # Debug print
-		print(f"Label ComboBox: {self.comboBox_output}")  # Debug print
-		print(f"Model ComboBox: {self.comboBox_model}")  # Debug print
+		# print(f"Image ComboBox: {self.comboBox_input}")  # Debug print
+		# print(f"Label ComboBox: {self.comboBox_output}")  # Debug print
+		# print(f"Model ComboBox: {self.comboBox_model}")  # Debug print
 
 		# Populate the comboBox with input and output layer names
 		self.update_comboBox_input_output()
@@ -56,7 +57,6 @@ class VOSQWidget(QWidget):
 		# Connect the viewer event when ctrl + mouse clicking for collecting initial points for SAM 2 model
 		self.viewer.mouse_drag_callbacks.append(self.on_ctrl_mouse_click)
 
-
 		# Find the buttons
 		self.button_initialize = self.findChild(QPushButton, "pushButton_initialize")
 		self.button_propagate = self.findChild(QPushButton, "pushButton_propagate")
@@ -68,10 +68,9 @@ class VOSQWidget(QWidget):
 		# Find the other components
 		self.progressBar_propagate = self.findChild(QProgressBar, "progressBar_propagate")
 		self.progressBar_propagate.setRange(0, 100) # assuming progress is 0-100%
+
 		# Connect the other components to the functions
 		self.progress_update.connect(self.progressBar_propagate.setValue)
-
-		self.sam2_vos_predictor = None
 
 
 	def show_error(self, error_message):
@@ -81,7 +80,7 @@ class VOSQWidget(QWidget):
 	def update_comboBox_input_output(self):
 		"""Update comboBox with current image and label layer names."""
 		try:			
-			self.comboBox_output.clear()
+			self.comboBox_input.clear()
 			self.comboBox_output.clear()
 
 			# Get layer names categorized by type
@@ -102,18 +101,6 @@ class VOSQWidget(QWidget):
 
 
 	def on_ctrl_mouse_click(self, layer, event):
-		# if event.button == 3: # Check if it is a middle-mouse click event
-		# 	point = [int(event.position[0]), int(event.position[1]), int(event.position[2])]
-		# 	layer_name = self.comboBox_output.currentText()
-		# 	layer = self.viewer.layers[layer_name]
-		# 	layer_unique_id = str(layer.unique_id)
-		# 	layer_label_index = int(uuid.UUID(layer_unique_id.replace('-','')))
-		# 	# positive point
-		# 	is_positive = 1
-		# 	if "Control" in event.modifiers:
-		# 		is_positive = 0
-
-		# 	print(f"adding point: {point} as a {is_positive} point to layer {layer_name} with id {layer_label_index}")  # Debug print
 		try:
 		# if self.sam2_vos_predictor is not None:
 			if event.button == 1 and "Control" in event.modifiers: # Check if it is a CTRL + left-mouse click event
@@ -130,10 +117,6 @@ class VOSQWidget(QWidget):
 
 				self.viewer.layers[label_layer_name].data[frame_idx,:,:] = frame_mask
 				self.viewer.layers[label_layer_name].refresh()
-				# layer = self.viewer.layers[label_layer_name]
-				# layer_data = layer.data
-				# layer_data[frame_idx, :, :] = frame_mask
-				# layer.data = layer_data
 
 			elif event.button == 2 and "Control" in event.modifiers: # Check if it is a CTRL + right-mouse click event
 				point = [int(event.position[0]), int(event.position[1]), int(event.position[2])]
@@ -149,10 +132,6 @@ class VOSQWidget(QWidget):
 
 				self.viewer.layers[label_layer_name].data[frame_idx,:,:] = frame_mask
 				self.viewer.layers[label_layer_name].refresh()
-				# layer = self.viewer.layers[label_layer_name]
-				# layer_data = layer.data
-				# layer_data[frame_idx, :, :] = frame_mask
-				# layer.data = layer_data
 		# else:
 		# 	print(f"Please initialize the data and the model.")  # Debug print
 		except Exception as e:
@@ -188,7 +167,9 @@ class VOSQWidget(QWidget):
 			video_path = self.viewer.layers[video_layer_name].source.path
 			video_dir = Path(video_path).with_suffix('')
 
-			print(f"video data shape: {video_data.shape}")  # Debug print
+			# print(f"video data shape: {video_data.shape}")  # Debug print
+			# print(f"video data shape: {video_data.shape}")  # Debug print
+			# print(f"video data shape: {video_data.shape}")  # Debug print
 
 			self.sam2_vos_predictor = SAM2vos(video_data, video_dir, checkpoint_path, config_path)
 
