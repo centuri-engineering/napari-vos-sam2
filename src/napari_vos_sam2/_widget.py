@@ -126,7 +126,7 @@ class VOSQWidget(QWidget):
 				label_layer_label_index = int(uuid.UUID(label_layer_unique_id.replace('-',''))) # use label layer's unique id as object id 
 				is_positive = 0
 
-				print(f"adding point: {point} as a {is_positive} point to layer {label_layer_name} with id {label_layer_label_index}")  # Debug print
+				# print(f"adding point: {point} as a {is_positive} point to layer {label_layer_name} with id {label_layer_label_index}")  # Debug print
 
 				frame_idx, frame_mask = self.sam2_vos_predictor.add_click_on_a_frame(point, label_layer_label_index, is_positive)
 
@@ -204,12 +204,15 @@ class VOSQWidget(QWidget):
 
 
 	def on_click_button_propagate(self):	
-		# get the data of the output layer
-		label_layer_name = self.comboBox_output.currentText()
-		label_layer = self.viewer.layers[label_layer_name]
-		label_layer_data = label_layer.data
-	
-		label_layer_data_mask = self.sam2_vos_predictor.propagate_video(label_layer_data, progress_callback=self.progress_update.emit)
+		if self.sam2_vos_predictor is not None:
+			# get the data of the output layer
+			label_layer_name = self.comboBox_output.currentText()
+			label_layer = self.viewer.layers[label_layer_name]
+			label_layer_data = label_layer.data
+		
+			label_layer_data_mask = self.sam2_vos_predictor.propagate_video(label_layer_data, progress_callback=self.progress_update.emit)
 
-		self.viewer.layers[label_layer_name].data = label_layer_data_mask
-		self.viewer.layers[label_layer_name].refresh()
+			self.viewer.layers[label_layer_name].data = label_layer_data_mask
+			self.viewer.layers[label_layer_name].refresh()
+		else:
+			self.show_error("Please initialize the data and the model.")
