@@ -70,7 +70,7 @@ To update latest development version :
 **Start napari via MiniForge (Anaconda / Minianaconda / ...) Prompt**
 
 - Start MiniForge (Anaconda / Minianaconda / ...) Prompt
-- Navigate to the SAM 2 folder i.e., **sam2** from above installation)
+- Navigate to the SAM 2 folder (i.e., **sam2** from above installation)
 - Run: `napari `
 
 **Run the plugin properly**
