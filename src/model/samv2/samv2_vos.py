@@ -172,7 +172,8 @@ class SAM2vos():
 
                 # Compute progress percentage
                 progress = int((out_frame_idx + 1) * 100 / total_steps)
-                # Update the progress bar via the callback if provided
+                # print("::::progress::::", progress)  # Debug print
+                # Update the progress bar via the callback if provided        
                 if progress_callback is not None:
                     progress_callback(progress)
 
@@ -194,6 +195,7 @@ class SAM2vos():
 
                 # Compute progress percentage
                 progress = int((total_steps - out_frame_idx) * 100 / total_steps)
+                # print("::::progress::::", progress)  # Debug print
                 # Update the progress bar via the callback if provided
                 if progress_callback is not None:
                     progress_callback(progress)
