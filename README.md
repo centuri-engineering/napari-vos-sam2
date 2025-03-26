@@ -11,6 +11,9 @@
 
 This [napari] plugin was generated with [copier] using the [napari-plugin-template].
 
+<video src="https://github.com/ledvic/napari-vos-sam2/blob/main/assets/demo.mp4" controls width="640">
+</video>
+
 <!--
 Don't miss the full getting started guide to set up your new package:
 https://github.com/napari/napari-plugin-template#getting-started
@@ -21,9 +24,6 @@ https://napari.org/stable/plugins/index.html
 
 <!-- <video src="assets/demo.mp4" controls width="640">
 </video> -->
-
-<video src="https://raw.githubusercontent.com/ledvic/napari-vos-sam2/main/assets/assets/demo.mp4" controls width="640">
-</video>
 ----------------------------------
 
 ## Project Title
