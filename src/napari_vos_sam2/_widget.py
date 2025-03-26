@@ -4,15 +4,28 @@ from qtpy.QtWidgets import QWidget, QComboBox, QMessageBox, QProgressBar, QPushB
 from qtpy import uic
 from qtpy.QtCore import Signal
 
+import warnings
 import os 
+warnings.filterwarnings("ignore")
+os.environ['NAPARI_WARNING_FILTER'] = 'ignore'
+
+
 import napari
 import uuid
 
 # import tqdm
 import requests
+
 from pathlib import Path
 
 from model.samv2.samv2_vos import SAM2vos
+
+
+
+# from qtpy.QtCore import qInstallMessageHandler
+# def qt_message_handler(mode, context, message):
+#     pass
+# qInstallMessageHandler(qt_message_handler)
 
 # if TYPE_CHECKING:
 # 	import napari
@@ -27,6 +40,7 @@ class VOSQWidget(QWidget):
 		self.viewer = viewer
 
 		self.sam2_vos_predictor = None
+		self.has_initialized_points = False
 
 		# Load GUI
 		gui_file_path = os.path.join(os.path.dirname(__file__), "..", "gui", "mainUI_v1.ui")
@@ -61,6 +75,9 @@ class VOSQWidget(QWidget):
 		self.button_initialize = self.findChild(QPushButton, "pushButton_initialize")
 		self.button_propagate = self.findChild(QPushButton, "pushButton_propagate")
 
+		# Disable the button "propagate" 
+		self.button_propagate.setEnabled(False)
+		
 		# Connect the buttons to the functions
 		self.button_initialize.clicked.connect(self.on_click_button_initialize)
 		self.button_propagate.clicked.connect(self.on_click_button_propagate)
@@ -111,12 +128,14 @@ class VOSQWidget(QWidget):
 				label_layer_label_index = int(uuid.UUID(label_layer_unique_id.replace('-','')))
 				is_positive = 1
 
-				# print(f"adding point: {point} as a {is_positive} point to layer {layer_name} with id {layer_label_index}")  # Debug print
+				# print(f"adding point: {point} as a {is_positive} point to layer {label_layer_name} with id {label_layer_label_index}")  # Debug print
 
 				frame_idx, frame_mask = self.sam2_vos_predictor.add_click_on_a_frame(point, label_layer_label_index, is_positive)
 
 				self.viewer.layers[label_layer_name].data[frame_idx,:,:] = frame_mask
 				self.viewer.layers[label_layer_name].refresh()
+
+				self.has_initialized_points = True
 
 			elif event.button == 2 and "Control" in event.modifiers: # Check if it is a CTRL + right-mouse click event
 				point = [int(event.position[0]), int(event.position[1]), int(event.position[2])]
@@ -135,10 +154,13 @@ class VOSQWidget(QWidget):
 		# else:
 		# 	print(f"Please initialize the data and the model.")  # Debug print
 		except Exception as e:
-			self.show_error(f"Please initize and instantiate the model on the video")
+			self.show_error(f"Please initize and instantiate the model on the video. Error: {e}")
 
 
 	def on_click_button_initialize(self):
+		
+		self.progressBar_propagate.setValue(0)
+		self.has_initialized_points = False
 
 		model_mapping = {
 			"sam2.1_hiera_tiny": ("sam2.1_hiera_t.yaml", "sam2.1_hiera_tiny.pt", "https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_tiny.pt"),
@@ -173,6 +195,8 @@ class VOSQWidget(QWidget):
 
 			self.sam2_vos_predictor = SAM2vos(video_data, video_dir, checkpoint_path, config_path)
 
+			self.button_propagate.setEnabled(True)
+
 		else:
 			self.show_error(f"Model was not recognized")
 
@@ -183,9 +207,6 @@ class VOSQWidget(QWidget):
 
 			response.raise_for_status() 
 
-			# os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
-
-			# with tqdm(total=int(response.headers.get('content-length', 0)), unit='B', unit_scale=True, unit_divisor=512) as pbar:
 			downloaded = 0
 			with open(checkpoint_path, "wb") as f:
 				for chunk in response.iter_content(chunk_size=1024):
@@ -193,7 +214,6 @@ class VOSQWidget(QWidget):
 						f.write(chunk)
 						downloaded += len(chunk)
 						print(f"\rDownloaded: {downloaded/1024/1024:.2f} MB", end="")
-							# pbar.update(len(chunk))
 
 			print(f"{selected_model} was downloaded successfully.")
 
@@ -204,7 +224,14 @@ class VOSQWidget(QWidget):
 
 
 	def on_click_button_propagate(self):	
-		if self.sam2_vos_predictor is not None:
+
+		if self.has_initialized_points is False:
+			self.show_error("Please add clicks on a frame before doing the propagation.")
+
+		elif self.sam2_vos_predictor is not None and self.has_initialized_points:
+			# Disable the button during processing
+			self.button_propagate.setEnabled(False)
+
 			# get the data of the output layer
 			label_layer_name = self.comboBox_output.currentText()
 			label_layer = self.viewer.layers[label_layer_name]
@@ -214,5 +241,9 @@ class VOSQWidget(QWidget):
 
 			self.viewer.layers[label_layer_name].data = label_layer_data_mask
 			self.viewer.layers[label_layer_name].refresh()
+
+			# Re-enable the button when finishing
+			self.button_propagate.setEnabled(True)
+		
 		else:
 			self.show_error("Please initialize the data and the model.")
