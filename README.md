@@ -19,7 +19,10 @@ and review the napari docs for plugin developers:
 https://napari.org/stable/plugins/index.html
 -->
 
-<video src="assets/demo.mp4" controls width="640">
+<!-- <video src="assets/demo.mp4" controls width="640">
+</video> -->
+
+<video src="https://raw.githubusercontent.com/ledvic/napari-vos-sam2/main/assets/assets/demo.mp4" controls width="640">
 </video>
 ----------------------------------
 
