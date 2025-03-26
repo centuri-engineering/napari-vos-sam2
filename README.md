@@ -18,6 +18,9 @@ https://github.com/napari/napari-plugin-template#getting-started
 and review the napari docs for plugin developers:
 https://napari.org/stable/plugins/index.html
 -->
+
+<video src="assets/demo.mp4" controls width="640">
+</video>
 ----------------------------------
 
 ## Project Title
