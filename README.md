@@ -78,7 +78,8 @@ To update latest development version :
 1. Open (Or drag and drop) the video into napari and choose that as the `Input Layer`
 2. Create a `Label Layer` and provide it as the `Output Layer`
 3. Select the model to run (default is SAM 2.1 tiny model) 
-4. Click on the Initialize button to intialize and instantiate the model on the video
+4. Click on the Initialize button to intialize and instantiate the model on the video.
+    [**Recommendation**: Add clicks on several frames to obtain better results]
 5. Once initialized, at any frame of video, `mouse middle click` will act as a `positive label` and `Ctrl + mouse middle click` will act as a `negative label` .
 6. Once satisfied, `propogate` the 2D labels in 3D space by clicking propagate button
 7. To run new segmentation, return the **`step 2`**.
