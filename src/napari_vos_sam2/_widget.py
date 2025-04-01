@@ -2,7 +2,7 @@
 
 from qtpy.QtWidgets import QWidget, QComboBox, QMessageBox, QProgressBar, QPushButton
 from qtpy import uic
-from qtpy.QtCore import Signal
+from qtpy.QtCore import Signal, QObject, QThread, Slot
 
 import warnings
 import os 
@@ -20,7 +20,7 @@ from pathlib import Path
 
 from model.samv2.samv2_vos import SAM2vos
 
-
+import torch
 
 # from qtpy.QtCore import qInstallMessageHandler
 # def qt_message_handler(mode, context, message):
@@ -29,6 +29,31 @@ from model.samv2.samv2_vos import SAM2vos
 
 # if TYPE_CHECKING:
 # 	import napari
+
+
+class PropagationWorker(QObject):
+	finished = Signal()
+	progress = Signal(int)
+
+	def __init__(self, predictor, label_data):
+		super().__init__()
+		self.predictor = predictor
+		self.label_data = label_data
+		self.result = None
+
+	@Slot()
+	def run(self):
+		if torch.cuda.is_available():
+			with torch.autocast("cuda", dtype=torch.bfloat16):
+				self.result = self.predictor.propagate_video(
+					self.label_data, progress_callback=self.progress.emit
+				)
+		else:
+			self.result = self.predictor.propagate_video(
+				self.label_data, progress_callback=self.progress.emit
+			)
+		self.finished.emit()
+
 
 class VOSQWidget(QWidget):
 	# your QWidget.__init__ can optionally request the napari viewer instance
@@ -223,27 +248,62 @@ class VOSQWidget(QWidget):
 			)
 
 
+	# def on_click_button_propagate(self):	
+
+	# 	if self.has_initialized_points is False:
+	# 		self.show_error("Please add clicks on a frame before doing the propagation.")
+
+	# 	elif self.sam2_vos_predictor is not None and self.has_initialized_points:
+	# 		# Disable the button during processing
+	# 		self.button_propagate.setEnabled(False)
+
+	# 		# get the data of the output layer
+	# 		label_layer_name = self.comboBox_output.currentText()
+	# 		label_layer = self.viewer.layers[label_layer_name]
+	# 		label_layer_data = label_layer.data
+		
+	# 		label_layer_data_mask = self.sam2_vos_predictor.propagate_video(label_layer_data, progress_callback=self.progress_update.emit)
+
+	# 		self.viewer.layers[label_layer_name].data = label_layer_data_mask
+	# 		self.viewer.layers[label_layer_name].refresh()
+
+	# 		# Re-enable the button when finishing
+	# 		self.button_propagate.setEnabled(True)
+		
+	# 	else:
+	# 		self.show_error("Please initialize the data and the model.")
+
 	def on_click_button_propagate(self):	
-
-		if self.has_initialized_points is False:
+		if not self.has_initialized_points:
 			self.show_error("Please add clicks on a frame before doing the propagation.")
+			return
 
-		elif self.sam2_vos_predictor is not None and self.has_initialized_points:
-			# Disable the button during processing
-			self.button_propagate.setEnabled(False)
-
-			# get the data of the output layer
-			label_layer_name = self.comboBox_output.currentText()
-			label_layer = self.viewer.layers[label_layer_name]
-			label_layer_data = label_layer.data
-		
-			label_layer_data_mask = self.sam2_vos_predictor.propagate_video(label_layer_data, progress_callback=self.progress_update.emit)
-
-			self.viewer.layers[label_layer_name].data = label_layer_data_mask
-			self.viewer.layers[label_layer_name].refresh()
-
-			# Re-enable the button when finishing
-			self.button_propagate.setEnabled(True)
-		
-		else:
+		if self.sam2_vos_predictor is None:
 			self.show_error("Please initialize the data and the model.")
+			return
+
+		self.button_propagate.setEnabled(False)
+
+		label_layer_name = self.comboBox_output.currentText()
+		label_layer = self.viewer.layers[label_layer_name]
+		label_layer_data = label_layer.data.copy()
+
+		# Set up the worker and thread
+		self.thread = QThread()
+		self.worker = PropagationWorker(self.sam2_vos_predictor, label_layer_data)
+		self.worker.moveToThread(self.thread)
+
+		# Connect signals
+		self.worker.progress.connect(self.progress_update.emit)
+		self.worker.finished.connect(self.thread.quit)
+		self.worker.finished.connect(self.worker.deleteLater)
+		self.thread.finished.connect(self.thread.deleteLater)
+
+		def on_finished():
+			label_layer.data = self.worker.result
+			label_layer.refresh()
+			self.button_propagate.setEnabled(True)
+
+		self.worker.finished.connect(on_finished)
+		self.thread.started.connect(self.worker.run)
+		self.thread.start()
